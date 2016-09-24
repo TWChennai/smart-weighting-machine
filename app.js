@@ -6,7 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var weight = require('./routes/weight');
+
+var mongo = require('mongodb');
+var monk = require('monk');
+var db = monk('localhost:27017/weighting_machine');
 
 var app = express();
 
@@ -22,8 +26,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req,res,next){
+  req.db = db;
+  next();
+});
+
 app.use('/', routes);
-app.use('/users', users);
+app.use('/weight', weight);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
